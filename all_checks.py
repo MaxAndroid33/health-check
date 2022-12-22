@@ -7,21 +7,25 @@ def check_reboot():
     """ Returns True if the computer has a pending erboot. """
     return os.path.exits("/run/reboot-required")
 
-def check_disk_usage(disk ,min_abs ,mi_percent):
+def check_disk_usage(disk ,min_gb ,mi_percent):
     """Returns True if there is enough free disk space , false otherwise """
     du = shutil.disk_usage(disk)
     # Calculate the percentage of free space
     percent_free = 100 * du.free /du.total
     # Calculate how many free gigabytes
     gigabytes_free =du.free /2**30
-    if percent_free <mi_percent or gigabytes_free < min_abs :
-        return False
-    return True
+    if percent_free <mi_percent or gigabytes_free < min_gb :
+        return True
+    return False
 
 def main():
     if check_reboot():
         print("pending Reboot.")
         sys.exit(1)
+    if check_disk_usage(disk="/", min_gb=2, mi_percent= 10):
+        print("Disk full")
+        sys.exit(1)
+        
     print("Everything ok.")
     sys.exit(0)
 
